@@ -24,6 +24,11 @@ class Graph:
         self.nodes: list[Node] = []
         self.nodes_map: dict[str | int, Node] = {}
 
+    def _reset(self):
+        for node in self.nodes:
+            node.value = LIMIT
+            node.previous_node = None
+
     def add_nodes(self, *labels):
         for label in labels:
             self.add_node(label)
@@ -43,27 +48,10 @@ class Graph:
     def _return_value(self, node: Node):
         return node.value
 
-    def shortest_path_start(self):
-        self.nodes[0].value = 0
-        unvisited_nodes = self.nodes.copy()
-        visited_nodes = []
-        while len(unvisited_nodes) != 0:
-            current_node = min(unvisited_nodes, key=self._return_value)
-
-            for arc in current_node.node_to:
-                node, value = arc
-                new_value = value + current_node.value
-                if node.value >= new_value:
-                    node.value = new_value
-                    node.previous_node = current_node
-
-            unvisited_nodes.remove(current_node)
-            visited_nodes.append(current_node)
-
-    def shortest_path(self, label_start: str):
+    def shortest_path(self, label_start: str | int = 0):
+        self._reset()
         self.nodes_map[label_start].value = 0
         unvisited_nodes = self.nodes.copy()
-        visited_nodes = []
         while len(unvisited_nodes) != 0:
             current_node = min(unvisited_nodes, key=self._return_value)
 
@@ -75,22 +63,25 @@ class Graph:
                     node.previous_node = current_node
 
             unvisited_nodes.remove(current_node)
-            visited_nodes.append(current_node)
 
 
-G = Graph()
-G.add_nodes("A", "B", "C", "D", "E", "F")
+if __name__ == "__main__":
+    G = Graph()
+    G.add_nodes("A", "B", "C", "D", "E", "F")
 
-G.add_arc("A", "B", 2)
-G.add_arc("A", "D", 8)
-G.add_arc("B", "D", 5)
-G.add_arc("B", "E", 6)
-G.add_arc("D", "E", 3)
-G.add_arc("D", "F", 2)
-G.add_arc("E", "F", 1)
-G.add_arc("E", "C", 9)
-G.add_arc("F", "C", 3)
+    G.add_arc("A", "B", 2)
+    G.add_arc("A", "D", 8)
+    G.add_arc("B", "D", 5)
+    G.add_arc("B", "E", 6)
+    G.add_arc("D", "E", 3)
+    G.add_arc("D", "F", 2)
+    G.add_arc("E", "F", 1)
+    G.add_arc("E", "C", 9)
+    G.add_arc("F", "C", 3)
 
-G.shortest_path("D")
-
-print(G.nodes)
+    G.shortest_path("D")
+    print(G.nodes)
+    G.shortest_path("A")
+    print(G.nodes)
+    G.shortest_path("C")
+    print(G.nodes)
